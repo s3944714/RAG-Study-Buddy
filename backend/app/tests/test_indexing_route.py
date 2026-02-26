@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 import app.db.models  # noqa: F401
 from app.db.base import Base
-from app.db.models import Document, DocumentStatus, Workspace
 from app.db.session import get_session
 from app.main import app as fastapi_app
 from app.services.embeddings_client import DummyEmbeddingsClient

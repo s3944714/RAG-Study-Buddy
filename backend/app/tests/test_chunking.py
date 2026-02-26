@@ -1,6 +1,6 @@
 import pytest
 
-from app.ingestion.chunking import ChunkCandidate, chunk_pages, _best_heading
+from app.ingestion.chunking import chunk_pages, _best_heading
 from app.ingestion.pdf_extractor import PageText
 
 

@@ -5,7 +5,6 @@ import pytest
 
 from app.services.vector_store import (
     InMemoryVectorStoreClient,
-    QueryResult,
     VectorDocument,
     get_vector_store_client,
 )

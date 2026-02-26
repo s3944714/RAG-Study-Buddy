@@ -1,0 +1,63 @@
+{
+  "_comment": "Evaluation set for RAG Study Buddy. Each entry has a query, expected_doc_ids (set of document IDs that should appear in top-k retrieval), and a reference_answer for groundedness checks. Update doc_ids to match your actual indexed documents.",
+  "version": "1.0",
+  "workspace_id": 1,
+  "eval_cases": [
+    {
+      "id": "eval_001",
+      "query": "What is the role of mitochondria in the cell?",
+      "expected_doc_ids": [1],
+      "reference_keywords": ["energy", "ATP", "powerhouse", "respiration"],
+      "notes": "Basic biology — should be retrieved from cell biology chapter"
+    },
+    {
+      "id": "eval_002",
+      "query": "Explain the process of DNA replication",
+      "expected_doc_ids": [1, 2],
+      "reference_keywords": ["helicase", "polymerase", "double helix", "nucleotide", "strand"],
+      "notes": "Multi-doc retrieval — both molecular biology docs should contribute"
+    },
+    {
+      "id": "eval_003",
+      "query": "What are the main differences between mitosis and meiosis?",
+      "expected_doc_ids": [2],
+      "reference_keywords": ["division", "chromosomes", "diploid", "haploid", "gametes"],
+      "notes": "Single-doc — cell division chapter"
+    },
+    {
+      "id": "eval_004",
+      "query": "How does the immune system recognise pathogens?",
+      "expected_doc_ids": [3],
+      "reference_keywords": ["antibody", "antigen", "T cell", "B cell", "lymphocyte"],
+      "notes": "Immunology chapter"
+    },
+    {
+      "id": "eval_005",
+      "query": "What factors affect enzyme activity?",
+      "expected_doc_ids": [1, 3],
+      "reference_keywords": ["temperature", "pH", "substrate", "active site", "inhibitor"],
+      "notes": "Biochemistry — enzyme kinetics"
+    },
+    {
+      "id": "eval_006",
+      "query": "Describe the structure of a neuron",
+      "expected_doc_ids": [4],
+      "reference_keywords": ["axon", "dendrite", "synapse", "myelin", "action potential"],
+      "notes": "Neuroscience chapter"
+    },
+    {
+      "id": "eval_007",
+      "query": "What is the central dogma of molecular biology?",
+      "expected_doc_ids": [2],
+      "reference_keywords": ["transcription", "translation", "DNA", "RNA", "protein"],
+      "notes": "Classic molecular biology question"
+    },
+    {
+      "id": "eval_008",
+      "query": "Explain osmosis and diffusion",
+      "expected_doc_ids": [1],
+      "reference_keywords": ["concentration gradient", "membrane", "water", "solute", "passive"],
+      "notes": "Cell transport mechanisms"
+    }
+  ]
+}

@@ -1,7 +1,8 @@
-# Python bytecode / caches
+echo "general.txt" >> .gitignore
+echo ".env" >> .gitignore
 __pycache__/
 *.py[cod]
-*$py.class
 
-# Pytest cache
-.pytest_cache/
+# eval outputs
+../eval_reports/
+eval_reports/

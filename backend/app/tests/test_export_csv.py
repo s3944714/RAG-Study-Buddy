@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import csv
-import io
-import json
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio

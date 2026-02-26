@@ -1,0 +1,191 @@
+# =============================================================================
+# RAG Study Buddy — Continuous Integration
+# =============================================================================
+# Triggers: push or pull-request to main / develop branches.
+#
+# Jobs
+# ----
+# test   — install deps, run pytest with coverage, upload coverage artefact
+# lint   — run ruff in check-only mode (no auto-fix in CI)
+#
+# Secrets required: none (all tests use DummyEmbeddingsClient + DummyLLMClient)
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: ["main", "develop", "stage_*"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches: ["main", "develop"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml"
+
+defaults:
+  run:
+    working-directory: backend
+
+# Cancel in-progress runs for the same branch (saves CI minutes)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Test job
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: "1.8.3"
+          virtualenvs-create: true
+          virtualenvs-in-project: true   # .venv inside backend/ — easy caching
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        id: cache-venv
+        with:
+          path: backend/.venv
+          key: venv-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('backend/poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-py${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction
+
+      - name: Run pytest
+        env:
+          # Force offline / dummy providers so no API keys are needed in CI
+          EMBEDDINGS_PROVIDER: dummy
+          LLM_PROVIDER: dummy
+          VECTOR_STORE_PROVIDER: memory
+          # Minimal app settings
+          ENV: test
+          DEBUG: "false"
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
+          OPENAI_API_KEY: ""
+          ANTHROPIC_API_KEY: ""
+        run: |
+          poetry run pytest app/tests/ \
+            -v \
+            --tb=short \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            -p no:warnings
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.12'   # upload once, from the newest Python
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/coverage.xml
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Lint job
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: "1.8.3"
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: backend/.venv
+          key: venv-lint-${{ runner.os }}-${{ hashFiles('backend/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Run ruff (check only — no auto-fix)
+        run: poetry run ruff check app/
+
+  # ---------------------------------------------------------------------------
+  # Eval job (offline — dummy providers, informational only)
+  # ---------------------------------------------------------------------------
+  eval:
+    name: Eval harness (offline)
+    runs-on: ubuntu-latest
+    needs: test          # only run if tests pass
+    if: github.ref == 'refs/heads/main'   # run on main pushes only
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: "1.8.3"
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: backend/.venv
+          key: venv-eval-${{ runner.os }}-${{ hashFiles('backend/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Run eval harness
+        env:
+          EMBEDDINGS_PROVIDER: dummy
+          LLM_PROVIDER: dummy
+          VECTOR_STORE_PROVIDER: memory
+          DATABASE_URL: sqlite+aiosqlite:///./eval.db
+        run: |
+          poetry run python -m app.eval.eval_runner
+
+      - name: Upload eval report
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: backend/eval_reports/report.json
+          retention-days: 30

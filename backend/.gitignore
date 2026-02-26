@@ -1,7 +1,7 @@
-
-# Python cache
+# Python bytecode / caches
 __pycache__/
 *.py[cod]
+*$py.class
 
-# local env
-.env
+# Pytest cache
+.pytest_cache/

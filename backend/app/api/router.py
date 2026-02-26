@@ -1,8 +1,13 @@
 from fastapi import APIRouter
 
+from app.api.routes.workspaces import router as workspaces_router
+from app.api.routes.documents import router as documents_router
+
 router = APIRouter(prefix="/api/v1")
 
-# Sub-routers will be registered here as modules are added, e.g.:
-# from app.api.endpoints import ingest, query
-# router.include_router(ingest.router, prefix="/ingest", tags=["ingestion"])
-# router.include_router(query.router,  prefix="/query",  tags=["retrieval"])
+router.include_router(workspaces_router)
+router.include_router(documents_router)
+
+# Future routers:
+# from app.api.routes import chat, quiz, flashcards
+# router.include_router(chat.router)

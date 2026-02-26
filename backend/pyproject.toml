@@ -2,7 +2,7 @@
 name = "rag-study-buddy"
 version = "0.1.0"
 description = "RAG-powered study buddy backend"
-authors = ["Your Name <you@example.com>"]
+authors = ["Your Name <rob>"]
 packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
@@ -12,6 +12,9 @@ uvicorn = {extras = ["standard"], version = "^0.29.0"}
 pydantic = "^2.7.0"
 pydantic-settings = "^2.2.0"
 python-dotenv = "^1.0.0"
+sqlalchemy = "^2.0.47"
+aiosqlite = "^0.22.1"
+python-multipart = "^0.0.22"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -24,4 +27,5 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests"]
+testpaths = ["app/tests"]
+

@@ -1,6 +1,6 @@
 import pytest
 import pytest_asyncio
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -9,7 +9,7 @@ from app.db.base import Base
 from app.db.session import get_session
 from app.main import app as fastapi_app
 from app.api.routes.chat import _get_embeddings, _get_llm, _get_vector_store
-from app.api.schemas import ChatRequest, ChatResponse, Citation
+from app.api.schemas import ChatResponse, Citation
 from app.retrieval.retriever import RetrievedChunk
 from app.services.chat_service import _build_citations, _inject_citation_numbers, run_chat
 from app.services.embeddings_client import DummyEmbeddingsClient

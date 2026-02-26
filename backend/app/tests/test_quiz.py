@@ -13,14 +13,12 @@ import app.db.models_quiz   # noqa: F401 — registers QuizSession with Base
 from app.api.routes.quiz import _get_embeddings, _get_llm, _get_vector_store
 from app.db.base import Base
 from app.db.models import Workspace
-from app.db.models_quiz import QuizSession, QuizStatus
 from app.db.session import get_session
 from app.main import app as fastapi_app
 from app.retrieval.retriever import RetrievedChunk
 from app.services.embeddings_client import DummyEmbeddingsClient
 from app.services.llm_client import DummyLLMClient
 from app.services.quiz_service import (
-    QUIZ_SYSTEM_PROMPT,
     _fallback_questions,
     _parse_questions,
     _validate_question,

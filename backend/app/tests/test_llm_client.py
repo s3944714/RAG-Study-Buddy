@@ -179,7 +179,6 @@ def test_openai_missing_package_raises_import_error() -> None:
     env = {"OPENAI_API_KEY": "sk-test"}
     with patch.dict(os.environ, env, clear=False):
         with patch.dict(sys.modules, {"openai": None}):  # type: ignore[dict-item]
-            from app.services import llm_client as _mod
             # Force re-evaluation of the import inside __init__
             with pytest.raises((ImportError, TypeError)):
                 from app.services.llm_client import OpenAILLMClient

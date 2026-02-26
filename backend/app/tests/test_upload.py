@@ -1,5 +1,4 @@
 import io
-import struct
 
 import pytest
 import pytest_asyncio

@@ -1,5 +1,4 @@
 import logging
-import re
 
 from app.api.schemas import ChatResponse, Citation
 from app.retrieval.retriever import RetrievedChunk, retrieve
